@@ -1,2 +1,3 @@
 # LABI - js13k 2018 'offline' themed game
-Find wifi signal in a maze and become civilized human.
+
+![alt text](https://raw.githubusercontent.com/romualdk/js13k2018_labi/master/preview-big.png)
