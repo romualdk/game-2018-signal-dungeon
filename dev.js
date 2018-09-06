@@ -50,6 +50,8 @@ function resizeCanvas() {
     scale = Math.floor(window.innerWidth / gamescreen.width);
     scale = scale < 1 ? 1 : (scale > 4 ? 4 : scale);
 
+    scale = 1;
+
     canvas.width = gamescreen.width * scale;
     canvas.height = gamescreen.height * scale;
     var left = Math.floor((window.innerWidth - canvas.width) / 2);
