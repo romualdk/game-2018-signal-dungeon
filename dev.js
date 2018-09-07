@@ -1035,6 +1035,6 @@ function render(dt) {
 /**
  * SERVICE WORKER
  */
-f('serviceWorker' in navigator) {
+if('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/js13k2018/labi/sw.min.js');
 };
