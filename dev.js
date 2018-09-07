@@ -638,7 +638,7 @@ var mazecanvas = null;
 var columnsPos = [[2,2],[6,2],[6,6],[2,6]];
 var columnsChance = 0;
 
-var showMap = false;
+var showMap = true;
 
 var indicator = 0;
 var indicatorSx = 0;
@@ -982,12 +982,6 @@ function update(dt) {
 
     if(isactive == false) {
         return false;
-    }
-
-    leveltime += dt;
-    if(leveltime >= 3) {
-        titletext = 'OFFLINE ' + level;
-        renderText();
     }
 
     for(var i in sprites) {
