@@ -638,7 +638,7 @@ var mazecanvas = null;
 var columnsPos = [[2,2],[6,2],[6,6],[2,6]];
 var columnsChance = 0;
 
-var showMap = true;
+var showMap = false;
 
 var indicator = 0;
 var indicatorSx = 0;
