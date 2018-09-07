@@ -1028,3 +1028,13 @@ function render(dt) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gamescreen, 0, 0, gamescreen.width, gamescreen.height, 0,0, canvas.width, canvas.height);
 }
+
+
+
+
+/**
+ * SERVICE WORKER
+ */
+f('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/js13k2018/labi/sw.min.js');
+};
