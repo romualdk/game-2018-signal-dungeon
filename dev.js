@@ -693,7 +693,6 @@ function startGame() {
 
     wallTile = 8 + (level - 1) % 3;
 
-    //points = 0;
     isactive = true;
 
     maze = getMaze(4,4);
@@ -908,6 +907,14 @@ function Coin() {
     this.height = 16;
     this.sx = 32;
     this.sy = 0;
+
+    if(room.hasColumns) {
+        for(var i in columnsPos) {
+            if(columnsPos[i][0] == this.mapx && columnsPos[i][1] == this.mapy) {
+                this.active = false;
+            }
+        }
+    }
 }
 
 Coin.prototype.update = function(dt) {
@@ -979,7 +986,7 @@ function update(dt) {
 
     leveltime += dt;
     if(leveltime >= 3) {
-        titletext = 'OFFLINE';
+        titletext = 'OFFLINE ' + level;
         renderText();
     }
 
