@@ -22,7 +22,7 @@ initSound();
 
 
 /**
- * Mobile controls
+ * VIRTUAL GAMEPAD (MOBILE ONLY)
  */
 function isMobile() { 
     if( navigator.userAgent.match(/Android/i)
@@ -172,9 +172,61 @@ function frame() {
 }
 
 /**
- * CONTROLS
+ * CONTROLS: GAMEPAD
  */
 
+window.addEventListener("gamepadconnected", connectgamepad);
+window.addEventListener("gamepaddisconnected", disconnectgamepad);
+
+var gamepad = [];
+var gamepadwait = 0;
+
+function connectgamepad(e) {
+    gamepad[e.gamepad.index] = e.gamepad;
+}
+
+function disconnectgamepad(e) {
+    delete gamepad[e.gamepad.index];
+}
+
+function updategamepad(dt) {
+    if(gamepad.length == 0) {
+        return false;
+    }
+
+    if(gamepadwait > 0) {
+        gamepadwait -= dt;
+        return false;
+    }
+
+    if(isactive) {
+        if(gamepad[0].buttons[12].pressed) { // up
+            sprites[0].move(0,-1);
+            gamepadwait = isactive ? 0.175 : 2;
+        }
+        else if(gamepad[0].buttons[15].pressed) { // right
+            sprites[0].move(1,0);
+            gamepadwait = isactive ? 0.175 : 2;
+        }
+        else if(gamepad[0].buttons[13].pressed) { // down
+            sprites[0].move(0,1);
+            gamepadwait = isactive ? 0.175 : 2;
+        }
+        else if(gamepad[0].buttons[14].pressed) { // left
+            sprites[0].move(-1,0);
+            gamepadwait = isactive ? 0.175 : 2;
+        }
+    }
+    else if((gamepad[0].buttons[0].pressed || gamepad[0].buttons[9].pressed) && titletext == 'GAME OVER') {
+        startGame();
+        gamepadwait = 1;
+    }
+}
+  
+
+/**
+ * CONTROLS: VIRTUAL GAMEPAD (MOBILE ONLY)
+ */
 function tryClick(x, y) {
     if(mobile == false) {
         return false;
@@ -218,7 +270,7 @@ document.addEventListener('touchstart', function(event) {
         var touches = event.changedTouches;
         tryClick(touches[0].pageX, touches[0].pageY);
     }
-    else if(padWait <= 0) {
+    else if(padWait <= 0  && titletext == 'GAME OVER') {
         startGame();
         padWait = 1;
     }
@@ -228,14 +280,18 @@ document.addEventListener('click', function(event) {
     if(isactive) {
         tryClick(event.clientX, event.clientY);
     }
-    else if(padWait <= 0) {
+    else if(padWait <= 0  && titletext == 'GAME OVER') {
         startGame();
         padWait = 1;
     }
 });
 
+/**
+ * CONTROLS: KEYBOARD
+ */
+
 document.addEventListener('keypress', function(event) {
-    if(event.key == " " || event.key == "Enter") { // space or enter
+    if((event.key == " " || event.key == "Enter") && titletext == 'GAME OVER') { // space or enter
         startGame();
     }
 
@@ -344,10 +400,13 @@ function getRoom(m, x, y) {
         doors = [0,0,1,0];
     }
 
+    var hasColumns = Math.random() * 100 <= columnsChance ? true : false;
+
     return {
       doors: doors,
       isentry: isentry,
-      isexit: isexit
+      isexit: isexit,
+      hasColumns: hasColumns
     };
 }
 
@@ -377,9 +436,16 @@ function drawRoom() {
         }
     }
 
+    
+
     if(mazey < 0 || mazey >= maze.y) {
         var pos = getTilePos(11);
         roomCtx.drawImage(tileset, pos[0],pos[1],16,16, 4*16,4*16,16,16);
+    }
+    else if(room.hasColumns) {
+        for(var i in columnsPos) {
+            roomCtx.drawImage(tileset, pos[0],pos[1],16,16, columnsPos[i][0]*16,columnsPos[i][1]*16,16,16);
+        }
     }
 }
 
@@ -490,7 +556,9 @@ function updateIndicator() {
 }
 
 
-function renderText(str) {
+function renderText() {
+    var str = titletext;
+
     gamectx.clearRect(16, 0, 96, 16);
 
     var dx = 24 + Math.floor((96 - (str.length * 8)) / 2);
@@ -498,12 +566,23 @@ function renderText(str) {
     for(var i in str) {
         var code = str.charCodeAt(i);
 
-        var tile = code - 65 + 10;
+        if(code >= 65 && code <= 90) {
+            var tile = code - 65 + 10;
+        }
+        else if(code >= 48 && code <= 58) {
+            var tile = code - 48;
+        }
+        else {
+            var tile = -1;
+        }
+        
+        if(tile >= 0) {
+            var sx = 0 + Math.floor(tile % 8) * 8;
+            var sy = 80 + Math.floor(tile / 8) * 8;
 
-        var sx = 0 + Math.floor(tile % 8) * 8;
-        var sy = 80 + Math.floor(tile / 8) * 8;
-
-        gamectx.drawImage(tileset, sx,sy, 8,8, dx + i*8,4, 8,8);
+            gamectx.drawImage(tileset, sx,sy, 8,8, dx + i*8,4, 8,8);
+        }
+        
     }
 
 }
@@ -556,6 +635,9 @@ var mazex = null;
 var mazey = null;
 var mazecanvas = null;
 
+var columnsPos = [[2,2],[6,2],[6,6],[2,6]];
+var columnsChance = 0;
+
 var showMap = false;
 
 var indicator = 0;
@@ -567,8 +649,15 @@ var indicatorTime = 2;
 
 var wallTile = 8;
 
+var level = 1;
+var leveltime = 0;
 var points = 0;
 var isactive = true;
+var titletext = '';
+var nextleveltimer = -1;
+
+var maxEnemies = 0;
+var maxCoins = 5;
 
 var sprites = [];
 
@@ -587,10 +676,24 @@ function startGame() {
     indicatorActualSx = indicatorSx;
     indicatorActualSy = indicatorSy;
     indicatorTime = 2;
-    
-    wallTile = 8 + Math.round(Math.random()*2);
 
-    points = 0;
+    if(titletext == 'ONLINE') {
+        level++;
+    }
+    else {
+        points = 0;
+    }
+    
+    leveltime = 0;
+    titletext = 'LEVEL ' + level;
+
+    maxEnemies = Math.floor(Math.sqrt(level - 1));
+    maxCoins = Math.floor(Math.sqrt(level * 10));
+    columnsChance = Math.floor(Math.sqrt(level * 10));
+
+    wallTile = 8 + (level - 1) % 3;
+
+    //points = 0;
     isactive = true;
 
     maze = getMaze(4,4);
@@ -605,7 +708,7 @@ function startGame() {
     
     mazecanvas = mazeImage(maze, mazex, mazey);
     renderPoints();
-    renderText('OFFLINE');
+    renderText();
     renderInfo();
 }
 
@@ -632,6 +735,16 @@ Player.prototype.move = function(dx, dy) {
 
     var canMove = mapx > 0 && mapx < 8 && mapy > 0 && mapy < 8;
 
+
+    if(room.hasColumns) {
+        for(var i in columnsPos) {
+            if(columnsPos[i][0] == mapx && columnsPos[i][1] == mapy) {
+                canMove = false;
+            }
+        }
+    }
+
+
     for(var i in room.doors) {
         if(room.doors[i] == 1 && doorPos[i][0] == mapx && doorPos[i][1] == mapy) {
             canMove = true;
@@ -652,8 +765,11 @@ Player.prototype.move = function(dx, dy) {
         sprites[0].sx = 16;
         sprites[0].sy = 0;
 
-        renderText('ONLINE');
+        titletext = 'ONLINE';
+        nextleveltimer = 1.75;
+        renderText();
         padWait = 2;
+        gamepadwait = 2;
         isactive = false;
     }
     else if(mazey >= maze.y && this.mapx == 4 && this.mapy == 4) {
@@ -763,7 +879,7 @@ function resetSpritePool() {
 }
 
 function spawnEnemies() {
-    var r = Math.round(Math.random() * 2);
+    var r = Math.round(Math.random() * maxEnemies);
 
     for(var i = 0; i < r; i++) {
         sprites.push(new Enemy());
@@ -771,7 +887,7 @@ function spawnEnemies() {
 }
 
 function spawnCoins() {
-    var r = 1 + Math.round(Math.random()*11);
+    var r = 1 + Math.round(Math.random() * maxCoins);
 
     for(var i = 0; i < r; i++) {
         sprites.push(new Coin());
@@ -821,18 +937,20 @@ function checkCollisions() {
 
                 renderPoints();
 
-                if(points >= 400 && showMap == false) {
+                if(points >= 999 && showMap == false) {
                     sound.fanfare.play();
                     showMap = true;
                 }
             }
             else if(sprites[i].type == 'enemy') {
                 padWait = 2;
+                gamepadwait = 2;
                 isactive = false;
                 sprites[0].active = false;
 
                 indicatorTime = 1;
-                renderText('GAME OVER');
+                titletext = 'GAME OVER';
+                renderText();
                 sound.hurt.play();
             }
         }
@@ -841,12 +959,28 @@ function checkCollisions() {
 
 
 function update(dt) {
+    updategamepad(dt);
+
     if(padWait > 0) {
         padWait -= dt;
     }
 
+    if(titletext == 'ONLINE') {
+        nextleveltimer -= dt;
+        if(nextleveltimer < 0) {
+            nextleveltimer = -1;
+            startGame();
+        }
+    }
+
     if(isactive == false) {
         return false;
+    }
+
+    leveltime += dt;
+    if(leveltime >= 3) {
+        titletext = 'OFFLINE';
+        renderText();
     }
 
     for(var i in sprites) {
