@@ -20,6 +20,63 @@ function initSound() {
 
 initSound();
 
+
+/**
+ * Mobile controls
+ */
+function isMobile() { 
+    if( navigator.userAgent.match(/Android/i)
+    || navigator.userAgent.match(/webOS/i)
+    || navigator.userAgent.match(/iPhone/i)
+    || navigator.userAgent.match(/iPad/i)
+    || navigator.userAgent.match(/iPod/i)
+    || navigator.userAgent.match(/BlackBerry/i)
+    || navigator.userAgent.match(/Windows Phone/i)
+    ){
+       return true;
+     }
+    else {
+       return false;
+     }
+   }
+
+var mobile = isMobile();
+
+var pad = document.getElementById('pad');
+var padctx = pad.getContext('2d');
+var padPoints = [[72, 152], [120,176], [72, 200], [24, 176]];
+var padRadius = 20;
+var padleft = 0;
+var padtop = 0;
+var padWait = 0;
+
+function resizePad() {
+    pad.width = canvas.width;
+    pad.height = canvas.height;
+    pad.style.left = canvas.style.left;
+    pad.style.top = Math.floor(window.innerHeight - canvas.height) + "px";
+
+    padleft = canvasleft;
+    padtop = Math.floor(window.innerHeight - canvas.height);
+}
+
+function initPad() {
+    if(mobile == false) {
+        return false;
+    }
+
+    for(var i in padPoints) {
+        padctx.beginPath();
+        padctx.arc(padPoints[i][0] * scale, padPoints[i][1] * scale, padRadius * scale, 0, Math.PI*2);
+        padctx.lineWidth = 2;
+        padctx.strokeStyle="rgba(255,255,255,0.2)";
+        padctx.fillStyle = 'rgba(255, 255, 255, 0.025)';
+        padctx.stroke();
+        padctx.fill();
+    }
+}
+
+
 /**
  * SCREEN
  */
@@ -36,15 +93,11 @@ var ctx = canvas.getContext('2d');
     canvas.width = gamescreen.width * scale;
     canvas.height = gamescreen.height * scale;
 
-var smoothing = 0;
-
-gamectx.msImageSmoothingEnabled = smoothing;
-gamectx.webkitImageSmoothingEnabled = smoothing;
-gamectx.imageSmoothingEnabled = smoothing;
-
 window.addEventListener('resize', resizeCanvas, false);
 
 resizeCanvas();
+var canvasleft = 0;
+var cavnastop = 0;
 
 function resizeCanvas() {
     scale = Math.floor(window.innerWidth / gamescreen.width);
@@ -55,9 +108,21 @@ function resizeCanvas() {
     var left = Math.floor((window.innerWidth - canvas.width) / 2);
     var top = Math.floor((window.innerHeight - canvas.height) / 2);
     left = left < 0 ? 0 : left;
-    top = top < 0 ? 0 : top;
+
+    if(mobile) {
+        top = 0;
+    }
+    else {
+        top = top < 0 ? 0 : top;
+    }
+    
     canvas.style.left = left + "px";
     canvas.style.top = top  + "px";
+
+    canvasleft = left;
+    canvastop = top;
+    resizePad();
+    initPad();
 }
 
 /**
@@ -106,13 +171,68 @@ function frame() {
     requestAnimationFrame(frame);
 }
 
-
-
-
-
 /**
  * CONTROLS
  */
+
+function tryClick(x, y) {
+    if(mobile == false) {
+        return false;
+    }
+
+    if(padWait > 0) {
+        return false;
+    }
+
+    var found = -1;
+    var i = 0;
+    while(found == -1 && i < padPoints.length) {
+        var tx = x - padleft;
+        var ty = y - padtop;
+
+        var px = padPoints[i][0] * scale;
+        var py = padPoints[i][1] * scale;
+
+        var a = px - tx;
+        var b = py - ty;
+        var dist = Math.sqrt(a*a + b*b );
+
+        if(dist <= padRadius * scale * 1.2) {
+            found = i;
+        }
+
+        i++;
+    }
+
+    var moves = [[0,-1], [1,0], [0,1], [-1,0]];
+
+    if(found >= 0) {
+        sprites[0].move(moves[found][0],moves[found][1]);
+
+        padWait = 0.15;
+    }
+}
+
+document.addEventListener('touchstart', function(event) {
+    if(isactive) {
+        var touches = event.changedTouches;
+        tryClick(touches[0].pageX, touches[0].pageY);
+    }
+    else if(padWait <= 0) {
+        startGame();
+        padWait = 1;
+    }
+});
+
+document.addEventListener('click', function(event) {
+    if(isactive) {
+        tryClick(event.clientX, event.clientY);
+    }
+    else if(padWait <= 0) {
+        startGame();
+        padWait = 1;
+    }
+});
 
 document.addEventListener('keypress', function(event) {
     if(event.key == " " || event.key == "Enter") { // space or enter
@@ -144,7 +264,7 @@ document.addEventListener('keypress', function(event) {
  */
 function getMaze(x,y) {
     var n=x*y-1;
-    if (n<0) {/*alert("illegal maze dimensions");*/ return false;}
+    if (n<0) { return false;}
     var horiz =[]; for (var j= 0; j<x+1; j++) horiz[j]= [],
         verti =[]; for (var j= 0; j<x+1; j++) verti[j]= [],
         here = [Math.floor(Math.random()*x), Math.floor(Math.random()*y)],
@@ -284,7 +404,7 @@ function changeRoom(dx,dy, door) {
 
     resetSpritePool();
     
-    if(mazey > 0 && mazey < 4) {
+    if(mazey >= 0 && mazey < 4) {
         spawnCoins();
         spawnEnemies();
     }
@@ -294,8 +414,8 @@ function changeRoom(dx,dy, door) {
  function mazeImage(m, mazex, mazey) {
     var currentRoom = mazex + 'x' + mazey;
 
-    var bgColor = "#000000";
-    var fogColor = "#666666";
+    var bgColor = "#7b53ad";
+    var fogColor = "#1b1c33";
   
     var canvas = document.createElement('canvas');
     canvas.width = m.x*4+1;
@@ -325,7 +445,7 @@ function changeRoom(dx,dy, door) {
       var id = x + "x" + y;
   
       if(id == currentRoom) {
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#e6da29";
         ctx.fillRect(1+x*4, 1+y*4, 3,3);
         ctx.fillStyle = fogColor;
       }
@@ -436,6 +556,8 @@ var mazex = null;
 var mazey = null;
 var mazecanvas = null;
 
+var showMap = false;
+
 var indicator = 0;
 var indicatorSx = 0;
 var indicatorSy = 48;
@@ -452,6 +574,8 @@ var sprites = [];
 
 
 tileset.onload = function() {
+    ctx.imageSmoothingEnabled = false;
+    gamectx.imageSmoothingEnabled = false;
     startGame();
     requestAnimationFrame(frame);
 }
@@ -529,6 +653,7 @@ Player.prototype.move = function(dx, dy) {
         sprites[0].sy = 0;
 
         renderText('ONLINE');
+        padWait = 2;
         isactive = false;
     }
     else if(mazey >= maze.y && this.mapx == 4 && this.mapy == 4) {
@@ -690,9 +815,19 @@ function checkCollisions() {
                 points += 5;
                 sprites[i].active = false;
 
+                if(points >= 1000) {
+                    points = 999;
+                }
+
                 renderPoints();
+
+                if(points >= 400 && showMap == false) {
+                    sound.fanfare.play();
+                    showMap = true;
+                }
             }
             else if(sprites[i].type == 'enemy') {
+                padWait = 2;
                 isactive = false;
                 sprites[0].active = false;
 
@@ -706,6 +841,10 @@ function checkCollisions() {
 
 
 function update(dt) {
+    if(padWait > 0) {
+        padWait -= dt;
+    }
+
     if(isactive == false) {
         return false;
     }
@@ -734,6 +873,10 @@ function update(dt) {
 function render(dt) {
     gamectx.clearRect(0, 16, gamescreen.width, gamescreen.height - 16 - 64);
 
+    // map
+    if(showMap) {
+        gamectx.drawImage(mazecanvas, 16, 0);
+    }
 
     gamectx.drawImage(roomCanvas, 0,16);
 
@@ -746,9 +889,6 @@ function render(dt) {
 
     // indicator
     gamectx.drawImage(tileset, indicatorActualSx,indicatorActualSy,16,16, 0,0,16,16);
-
-    // map
-    //gamectx.drawImage(mazecanvas, 0, 0);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gamescreen, 0, 0, gamescreen.width, gamescreen.height, 0,0, canvas.width, canvas.height);

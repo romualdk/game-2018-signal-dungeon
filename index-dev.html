@@ -3,10 +3,12 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <title>LABI js13k2018</title>
+    <title>LABI #js13k 2018</title>
     <meta name="description" content="js13k 2018 'offline' themed game. Find wifi signal in a maze and become civilized man.">
     <meta name="keywords" content="js13k, game, offline, javascript, js, maze">
     <meta name="author" content="Dorota Kasperek (idea, gfx), Romuald Kowalczyk (code)">
+    <link rel="icon" type="image/png" href="icon32.png">
+    <link rel="manifest" href="manifest.json">
     <style>
     html, body {
         background-color: #1b1c33;
@@ -24,15 +26,11 @@
         border: 0;
     }
 
-    #screen {
-        border: 0;
-    }
-
-
     </style>
 </head>
 <body>
 <canvas id="screen"></canvas>
+<canvas id="pad"></canvas>
 <script type="text/javascript" src="dev.js"></script>
 </body>
 </html>
