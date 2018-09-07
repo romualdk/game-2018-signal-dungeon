@@ -27,7 +27,7 @@ initSound();
 var gamescreen = document.createElement('canvas');
 var gamectx = gamescreen.getContext("2d");
 gamescreen.width = 144;
-gamescreen.height = 160;
+gamescreen.height = 224;
 
 var scale = 1;
 
@@ -48,7 +48,7 @@ resizeCanvas();
 
 function resizeCanvas() {
     scale = Math.floor(window.innerWidth / gamescreen.width);
-    scale = scale < 1 ? 1 : (scale > 4 ? 4 : scale);
+    scale = scale < 1 ? 1 : (scale > 3 ? 3 : scale);
 
     canvas.width = gamescreen.width * scale;
     canvas.height = gamescreen.height * scale;
@@ -64,7 +64,7 @@ function resizeCanvas() {
  * TILESET
  */
 var tileset = new Image();
-    tileset.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAACACAMAAACMX59YAAAAFVBMVEUAAAAbHDPafSLm2il7U60tk93TJzRJbbmrAAAAB3RSTlMA////////pX+m+wAAAr9JREFUaIHtlAlywyAMRTFg3//IZTFoRcamTdNMNfEiLD2kD8S5HzFf7G4Gz79B4Aneh2TzgNASQgOELaTfDcCZMAbkCawWWEIpKCBAKc8gCNEqgNQI9SkthJrfUoLfcv4GKTagCliFbLwtGarabCGnnSUXQr6dHQVEGEuQvzQJKoD6U8Y3Xn6/tZXbzE8BvfeB/wm299s4ZKdeNpp/QSCAfSeE9rIPCSwh+aH84DN6GPk4Q3MNQAj1oiPDCS4r4P2ylsYEMiQDhvlnhJlgp4t13/P5px3txmYSy0RayveqwXh+9iJFpasyzIfXHAz1QEW2EOMKr/bBmh1Xlv8t+RsyV8ebHdTNA+UONx7vDo9GDn8NYPEJACOHtwFb9Ul8BrSRoyWg9pUKaLy7ChD6wasHgO+FSYAyAfZdC8bPCUAT89sAqy1YIjLRVBFXl3F6I3l9I61u5eXDNGWgnDjO26K9AyAmwyM3/QTYNhrA/dcA0Kjw8+vYbwCYVvglYehjQMUKvyeoPgHUbAiY8Z8C+uBbAGAAiTTtv8Nh+gDA1fn/KwDj/L8SoG/dOwB+WF4PWG7hlwCLtg74Bsutni/EP5/pdj77APddj3DIR1ePw9/7lCUgogpkMMxIolyv1DEA9IJKhSuSAlBJdJyQkC/i1QHaK9FKm5CpTtXGvZInVmPNOBlXovggKtsHE1eE/gfKji4eRxXApUZWotMAokV9lukKljWQ6rMtO1yFR2uumDYxmllt3V4xok5tnSxG1yKqIkuAPDlsufGHZ4BotyD2Uy9diIQBqHe5/CRB+8c6x52T4xKwbhfnn/haz7NnAd9vA5B+FsA+TBzgYvnpm109AAIg1qkHq60JANmcyG0EMZPrD+qvmrESfapngNkiof+u6rk8k00iAZ+JFNv5VtSeycfHV673JMENAHOr8G//luwLJCkwsjTiSXgAAAAASUVORK5CYII=";
+    tileset.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAACACAMAAACMX59YAAAAFVBMVEUAAAAbHDPafSLm2il7U60tk93TJzRJbbmrAAAAB3RSTlMA////////pX+m+wAAA2pJREFUaIHVmQ2ThCAIhjVr//9PvpKElw/L8uZmj9nNMHlExMYq5UlJYe1S5QlAt1+WcUKKDJal7DIOKM2gNEDJZf89AJwGfcDRgbJjNTmD/aw6tLvEzap7Rdm33nwMdstEgMTd7s3Fv3yOGoZQyP5sTl2TI3kEQAGkQLar5Beb+CGwmg77TC5ndtmlwVUQj9Nm0AX0JYUGx/kjwNEz+vgUUAgAMdP6vQcT8keAjQ9dwKYub1W0fYcQArZNEdrJFhFSYLDrpf6EB0UA2DbXZagiQN0P9t4K/cEFpd0CfAMTEzUkB3AxsAA7Kw5ALS4NbAANwM77dqx/PaJNJ5ONQc44TWpIx5FikCNJiOWECRKjhFlQAegpjFj8EY8Cxshiiqb5EeBS0sfKcXe0ZyABYAFpZnKw1z1ggRa74gDmegCQFp8lAujru83KcgJai88SA9T1A9B6Z4Aes4mfCWq1O/sXwMKOhh6gToDMRWruqdIDWjAboPb/m4DZITgDCN9IEGencTaRZlN5ejGFIpG7Xc624ql8A+CcDpaHejqyQTew+t8AoNbpNeu7egNIt04/l01HRwBhnc4Goa4AZC0NRvS3AK78CoBUQJCG9W9YTP8TADum+/tB154ILwGy+f4tDy7Wf8eFomPwFCB75/tUjgHHbt4D7GLpA9w0PgPg88SrIfRmYRSgdu8vgyjPE/91NWoAD5ULOjnLGozctlZYf94TKXBU0zDm30AZr5/niRqs4IFvLD2qVvW0TmM2ABkLuC7/FfkwBNWvIYFu2gcAKLDGxoYBPuo62lna65IBc+I9UJ4EugTV5MHAf5XxczkG8DMAAOX6alzMEUANKXV7GfZgOgY++iZlu7PQAHOSwo6h53DoUJk6KY5tzWRwLFYGYJA9QNeuNhP1hXeA9XoILp9WnNZuDGDsfvoxiJLBZhbAdZ3hFjApkom9zFO6T+/xtYDHxwCI3xXgejFZwLmhSa6n7gJwAHNDwUxZQ5AB0BFnISuC6UlaaH0+D0J3VUoGAq+I+wBwOttX5VAIgMdG06Pts35LDSUA4iBRS/u5QIp6P+hF29hLz7jRXG0GGn+y//7gdqq5A2guuRfT+pFnQPyrdtxsD4n7/gCPPOMugN4eebbRIcjRfm8YA6jCPrE8BujvDW8+1pk8mJQfESVBdomKwz0AAAAASUVORK5CYII=";
 
 function getTilePos(tile) {
     return [
@@ -239,7 +239,9 @@ roomCanvas.height = 144;
 var doorPos = [[4,0],[8,4],[4,8],[0,4]];
 
 function drawRoom() {
-    var tile = 8;
+    roomCtx.clearRect(0,0, 9*16,9*16);
+
+    var tile = wallTile;
     var pos = getTilePos(tile);
 
     for(var x = 0; x < 9;x++)
@@ -253,6 +255,11 @@ function drawRoom() {
         if(room.doors[i] == 1) {
             roomCtx.clearRect(doorPos[i][0]*16, doorPos[i][1]*16, 16,16);
         }
+    }
+
+    if(mazey < 0 || mazey >= maze.y) {
+        var pos = getTilePos(11);
+        roomCtx.drawImage(tileset, pos[0],pos[1],16,16, 4*16,4*16,16,16);
     }
 }
 
@@ -366,9 +373,9 @@ function updateIndicator() {
 function renderText(str) {
     gamectx.clearRect(16, 0, 96, 16);
 
-    var dx = 16 + Math.floor((96 - (str.length * 8)) / 2);
+    var dx = 24 + Math.floor((96 - (str.length * 8)) / 2);
 
-    for(var i = 0; i < str.length; i++) {
+    for(var i in str) {
         var code = str.charCodeAt(i);
 
         var tile = code - 65 + 10;
@@ -382,18 +389,41 @@ function renderText(str) {
 }
 
 function renderPoints() {
-    gamectx.clearRect(112, 0, 32, 16);
+    gamectx.clearRect(120, 0, 32, 16);
 
-    var str = String("0000" + Math.floor(points)).slice(-4);
+    var str = String("000" + Math.floor(points)).slice(-3);
 
-    for (var i = 0; i < str.length; i++) {
+    for (var i in str) {
         var code = str.charCodeAt(i);
 
         var tile = code - 48;
         var sx = 0 + Math.floor(tile % 8) * 8;
         var sy = 80 + Math.floor(tile / 8) * 8;
 
-        gamectx.drawImage(tileset, sx,sy, 8,8, 112 + i*8,4, 8,8);
+        gamectx.drawImage(tileset, sx,sy, 8,8, 120 + i*8,4, 8,8);
+    }
+}
+
+function renderInfo() {
+    gamectx.clearRect(0,160,64,144);
+
+    var str = [
+        'FIND WIFI SIGNAL',
+        'AND BECOME',
+        'CIVILIZED MAN'];
+    
+    var tab = [8, 32, 20];
+
+    for(var y in str)
+    for(var i in str[y]) {
+        var code = str[y].charCodeAt(i);
+
+        var tile = code - 65 + 10;
+
+        var sx = 0 + Math.floor(tile % 8) * 8;
+        var sy = 80 + Math.floor(tile / 8) * 8;
+
+        gamectx.drawImage(tileset, sx,sy, 8,8, tab[y] + i*8,176 + y*16, 8,8);
     }
 }
 
@@ -412,6 +442,8 @@ var indicatorSy = 48;
 var indicatorActualSx = indicatorSx;
 var indicatorActualSy = indicatorSy;
 var indicatorTime = 2;
+
+var wallTile = 8;
 
 var points = 0;
 var isactive = true;
@@ -432,6 +464,8 @@ function startGame() {
     indicatorActualSy = indicatorSy;
     indicatorTime = 2;
     
+    wallTile = 8 + Math.round(Math.random()*2);
+
     points = 0;
     isactive = true;
 
@@ -448,6 +482,7 @@ function startGame() {
     mazecanvas = mazeImage(maze, mazex, mazey);
     renderPoints();
     renderText('OFFLINE');
+    renderInfo();
 }
 
 
@@ -531,6 +566,9 @@ Enemy = function() {
     this.y = this.mapy * 16;
     this.width = 16;
     this.height = 16;
+    this.enemy = Math.round(Math.random()*2);
+    this.tiles = [[4,30], [5,19], [6,31]];
+    this.tile = 0;
     this.sx = 0 + Math.round(Math.random()*2) * 16;
     this.sy = 16;
     this.movetimestart =  0.35 + Math.random()*1;
@@ -538,6 +576,18 @@ Enemy = function() {
 }
 
 Enemy.prototype.update = function(dt) {
+    // animation
+    this.tile += this.movetimestart * dt;
+    if(this.tile >= this.tiles[this.enemy].length) {
+        this.tile -= this.tiles[this.enemy].length;
+    }
+
+    var tileNum = this.tiles[this.enemy][Math.floor(this.tile)];
+    
+    this.sx = Math.floor(tileNum % 4) * 16;
+    this.sy = Math.floor(tileNum / 4) * 16;
+
+    // movement
     this.movetime -= dt;
     if(this.movetime <= 0) {
         this.movetime = this.movetimestart - this.movetime;
@@ -610,6 +660,9 @@ function Coin() {
     this.mapy = 1 + Math.round(Math.random()*5);
     this.x = this.mapx * 16;
     this.y = this.mapy * 16;
+    this.tiles = [2,3,7,3];
+    this.tile = 0;
+    this.speed = 5 + Math.random()*3;
     this.width = 16;
     this.height = 16;
     this.sx = 32;
@@ -617,7 +670,13 @@ function Coin() {
 }
 
 Coin.prototype.update = function(dt) {
+    this.tile += this.speed * dt;
+    if(this.tile >= this.tiles.length) {
+        this.tile -= this.tiles.length;
+    }
 
+    this.sx = Math.floor(this.tiles[Math.floor(this.tile)] % 4) * 16;
+    this.sy = Math.floor(this.tiles[Math.floor(this.tile)] / 4) * 16;
 }
 
 
@@ -673,7 +732,7 @@ function update(dt) {
 }
 
 function render(dt) {
-    gamectx.clearRect(0, 16, gamescreen.width, gamescreen.height - 16);
+    gamectx.clearRect(0, 16, gamescreen.width, gamescreen.height - 16 - 64);
 
 
     gamectx.drawImage(roomCanvas, 0,16);
