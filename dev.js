@@ -696,7 +696,7 @@ function startGame() {
     leveltime = 0;
     titletext = 'LEVEL ' + level;
 
-    maxEnemies = Math.floor(Math.sqrt(level - 1));
+    maxEnemies = Math.floor(Math.sqrt(level));
     maxCoins = Math.floor(Math.sqrt(level * 10));
     columnsChance = Math.floor(Math.sqrt(level * 10));
 
