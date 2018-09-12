@@ -190,7 +190,8 @@ function disconnectgamepad(e) {
 }
 
 function updategamepad(dt) {
-    if(gamepad.length == 0) {
+    if(gamepadwait > 0) {
+        gamepadwait -= dt;
         return false;
     }
 
@@ -198,6 +199,14 @@ function updategamepad(dt) {
         gamepadwait -= dt;
         return false;
     }
+
+    var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+
+    if(gamepads.length == 0) {
+        return false;
+    }
+
+    gamepad = gamepads;
 
     if(isactive) {
         if(gamepad[0].buttons[12].pressed) { // up
@@ -290,7 +299,7 @@ document.addEventListener('click', function(event) {
  * CONTROLS: KEYBOARD
  */
 
-document.addEventListener('keypress', function(event) {
+document.addEventListener('keydown', function(event) {
     if((event.key == " " || event.key == "Enter") && titletext == 'GAME OVER') { // space or enter
         startGame();
     }
@@ -1028,13 +1037,3 @@ function render(dt) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(gamescreen, 0, 0, gamescreen.width, gamescreen.height, 0,0, canvas.width, canvas.height);
 }
-
-
-
-
-/**
- * SERVICE WORKER
- */
-if('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/js13k2018/labi/sw.min.js');
-};
