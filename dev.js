@@ -202,13 +202,13 @@ function updategamepad(dt) {
 
     var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
 
-    if(gamepads.length == 0) {
+    if(gamepads.length == 0 || gamepads[0] === null) {
         return false;
     }
 
     gamepad = gamepads;
 
-    if(isactive) {
+    if(isactive && gamepad[0] && gamepad[0].buttons) {
         if(gamepad[0].buttons[12].pressed) { // up
             sprites[0].move(0,-1);
             gamepadwait = isactive ? 0.175 : 2;
