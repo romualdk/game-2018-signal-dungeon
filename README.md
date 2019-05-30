@@ -1,10 +1,11 @@
-# LABI #js13k 2018
+Signal dungeon
+==============
 
-Simple game in as little as 13KB.
+Simple game in for js13k 2018 (as little as 13KB).
 
 Find wifi signal in a maze and become civilized man. Use keyboard, touch or gamepad to play.
 
-Play: [http://romualdk.github.io/js13k2018/labi/](http://romualdk.github.io/js13k2018/labi/)
+http://romualdk.github.io/games/2018/signal-dungeon/
 
 Watch: [https://youtu.be/t4XT5266yhI](https://youtu.be/t4XT5266yhI)
 
